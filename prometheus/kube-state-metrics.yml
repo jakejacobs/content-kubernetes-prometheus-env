@@ -6,17 +6,17 @@ metadata:
   labels:
     app: kube-state-metrics
   annotations:
-    prometheus.io/scrape: 'true'
+    prometheus.io/scrape: "true"
 spec:
   ports:
-  - name: metrics
-    port: 8080
-    targetPort: metrics
-    protocol: TCP
+    - name: metrics
+      port: 8080
+      targetPort: metrics
+      protocol: TCP
   selector:
     app: kube-state-metrics
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kube-state-metrics
@@ -25,6 +25,9 @@ metadata:
     app: kube-state-metrics
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: kube-state-metrics
   template:
     metadata:
       name: kube-state-metrics-main
@@ -35,5 +38,5 @@ spec:
         - name: kube-state-metrics
           image: quay.io/coreos/kube-state-metrics:latest
           ports:
-          - containerPort: 8080
-            name: metrics
+            - containerPort: 8080
+              name: metrics

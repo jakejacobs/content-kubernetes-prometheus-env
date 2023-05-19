@@ -1,10 +1,13 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: prometheus-deployment
   namespace: monitoring
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus-server
   template:
     metadata:
       labels:
@@ -27,7 +30,21 @@ spec:
         - name: watch
           image: weaveworks/watch:master-5b2a6e5
           imagePullPolicy: IfNotPresent
-          args: ["-v", "-t", "-p=/etc/prometheus", "-p=/var/prometheus", "curl", "-X", "POST", "--fail", "-o", "-", "-sS", "http://localhost:9090/-/reload"]
+          args:
+            [
+              "-v",
+              "-t",
+              "-p=/etc/prometheus",
+              "-p=/var/prometheus",
+              "curl",
+              "-X",
+              "POST",
+              "--fail",
+              "-o",
+              "-",
+              "-sS",
+              "http://localhost:9090/-/reload",
+            ]
           volumeMounts:
             - name: prometheus-config-volume
               mountPath: /etc/prometheus
